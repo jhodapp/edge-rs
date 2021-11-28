@@ -1,4 +1,4 @@
-# A Rust-based implementation of Edge-rs for the Raspberry Pi Pico.
+# A Rust-based implementation of Edge-rs for the Raspberry Pi Pico
 
 ## Getting started
 
@@ -35,6 +35,13 @@ For a release build
 cargo run --release
 ```
   
+## Debugging
+
+To debug you can use either `cargo run` which will try and launch a gdb session connecting to a local OpenOCD instance
+at localhost:3333, or you can use VSCode and the [cortex-debug extension for VSCode](https://marcelball.ca/projects/cortex-debug/) to connect to the same OpenOCD instance.
+
+For more information on getting set up to use OpenOCD with gdb for flashing and debugging your Pico target device, [see this getting started guide](https://reltech.substack.com/p/getting-started-with-rust-on-a-raspberry).
+
 ## License
 
 This project is licensed under either of
