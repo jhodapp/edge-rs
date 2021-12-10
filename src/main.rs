@@ -89,11 +89,11 @@ fn main() -> ! {
     );
 
     let mut uart = hal::uart::UartPeripheral::<_, _>::new(pac.UART0, &mut pac.RESETS)
-        .enable(
-            hal::uart::common_configs::_9600_8_N_1,
-            clocks.peripheral_clock.freq(),
-        )
-        .unwrap();
+    .enable(
+        hal::uart::common_configs::_115200_8_N_1,
+        clocks.peripheral_clock.freq(),
+    )
+    .unwrap();
 
     // UART TX (characters sent from RP2040) on pin 1 (GPIO0)
     let _tx_pin = pins.gpio0.into_mode::<hal::gpio::FunctionUart>();
@@ -136,10 +136,6 @@ fn main() -> ! {
     // measure temperature, pressure, and humidity
     let measurements = bme280.measure().unwrap();
 
-    writeln!(uart, "Relative humidity: {:?}%\r", &measurements.humidity).ok().unwrap();
-    writeln!(uart, "Temperature: {:?} deg C\r", &measurements.temperature).ok().unwrap();
-    writeln!(uart, "Pressure: {:?} pascals\r", &measurements.pressure).ok().unwrap();
-
     // let mut data: [u8; 1] = [0];
     // uart.write_full_blocking(b"About to check for BME280 chip\r\n");
     // i2c.write_read(0x77, &[BME280_CHIP_ID_ADDR], &mut data).unwrap();
@@ -155,9 +151,12 @@ fn main() -> ! {
 
     // Demo finish - just loop until reset
 
-    #[allow(clippy::empty_loop)]
     loop {
-        // Empty loop
+        writeln!(uart, "Relative humidity: {:?}%\r", &measurements.humidity).ok().unwrap();
+        writeln!(uart, "Temperature: {:?} deg C\r", &measurements.temperature).ok().unwrap();
+        writeln!(uart, "Pressure: {:?} pascals\r", &measurements.pressure).ok().unwrap();
+
+        //delay.delay_ms(1000);
     }
 }
 
