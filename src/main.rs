@@ -16,9 +16,6 @@ use cortex_m_rt::entry;
 use panic_halt as _;
 
 // Some traits we need
-//use embedded_hal::blocking::i2c::Write;
-//use cortex_m::prelude::_embedded_hal_blocking_i2c_WriteRead;
-//use cortex_m::prelude::_embedded_hal_serial_Write;
 use embedded_time::rate::Extensions;
 use core::fmt::Write;
 use embedded_time::fixed_point::FixedPoint;
@@ -43,9 +40,6 @@ pub static BOOT2: [u8; 256] = rp2040_boot2::BOOT_LOADER_W25Q080;
 /// if your board has a different frequency
 const XTAL_FREQ_HZ: u32 = 12_000_000u32;
 
-// const BME280_CHIP_ID: u8 = 0x60;
-// const BME280_CHIP_ID_ADDR: u8 = 0xD0;
-
 /// Entry point to our bare-metal application.
 ///
 /// The `#[entry]` macro ensures the Cortex-M start-up code calls this function
@@ -61,14 +55,11 @@ fn main() -> ! {
     // Set up the watchdog driver - needed by the clock setup code
     let mut watchdog = hal::watchdog::Watchdog::new(pac.WATCHDOG);
 
-    //let mut peripheral_clock = ClocksManager::new(pac.CLOCKS);
-
     // Configure the clocks
     let clocks = hal::clocks::init_clocks_and_plls(
         XTAL_FREQ_HZ,
         pac.XOSC,
         pac.CLOCKS,
-        //peripheral_clock,
         pac.PLL_SYS,
         pac.PLL_USB,
         &mut pac.RESETS,
@@ -103,7 +94,6 @@ fn main() -> ! {
     // Configure two pins as being I²C, not GPIO
     let sda_pin = pins.gpio18.into_mode::<hal::gpio::FunctionI2C>();
     let scl_pin = pins.gpio19.into_mode::<hal::gpio::FunctionI2C>();
-    // let not_an_scl_pin = pins.gpio20.into_mode::<hal::gpio::FunctionI2C>();
 
     // Create the I²C drive, using the two pre-configured pins. This will fail
     // at compile time if the pins are in the wrong mode, or if this I²C
@@ -119,44 +109,26 @@ fn main() -> ! {
 
     uart.write_full_blocking(b"BME280 example\r\n");
 
-    let delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().integer());
-    // initialize the BME280 using the primary I2C address 0x76
-    //let mut bme280 = BME280::new_primary(i2c, delay);
-    //uart.write_full_blocking(b"Initialized primary I2C port at address 0x76\r\n");
+    let mut delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().integer());
     // initialize the BME280 using the secondary I2C address 0x77
-    let mut bme280 = BME280::new_secondary(i2c, delay);
+    let mut bme280 = BME280::new_secondary(i2c);
 
     // initialize the sensor
-    let res = bme280.init();
+    let res = bme280.init(&mut delay);
     match res {
         Ok(_) => uart.write_full_blocking(b"Successfully initialized BME280 device\r\n"),
         Err(_) => uart.write_full_blocking(b"Failed to initialize BME280 device\r\n"),
     }
 
-    // measure temperature, pressure, and humidity
-    let measurements = bme280.measure().unwrap();
-
-    // let mut data: [u8; 1] = [0];
-    // uart.write_full_blocking(b"About to check for BME280 chip\r\n");
-    // i2c.write_read(0x77, &[BME280_CHIP_ID_ADDR], &mut data).unwrap();
-    // let chip_id = data[0]; // read_register(i2c, BME280_CHIP_ID_ADDR)?;
-    // uart.write_full_blocking(b"Wrote to BME280 chip register to check chip_id\r\n");
-
-    // writeln!(uart, "chip_id byte: {:?}\r", &chip_id).ok().unwrap();
-    // if chip_id == BME280_CHIP_ID {
-    //     uart.write_full_blocking(b"Successfully identified BME280 chip\r\n")
-    // } else {
-    //     uart.write_full_blocking(b"Failed to identify BME280 chip\r\n")
-    // }
-
-    // Demo finish - just loop until reset
-
     loop {
+        // measure temperature, pressure, and humidity
+        let measurements = bme280.measure(&mut delay).unwrap();
+        
         writeln!(uart, "Relative humidity: {:?}%\r", &measurements.humidity).ok().unwrap();
         writeln!(uart, "Temperature: {:?} deg C\r", &measurements.temperature).ok().unwrap();
-        writeln!(uart, "Pressure: {:?} pascals\r", &measurements.pressure).ok().unwrap();
+        writeln!(uart, "Pressure: {:?} pascals\r\n", &measurements.pressure).ok().unwrap();
 
-        //delay.delay_ms(1000);
+        delay.delay_ms(2000);
     }
 }
 
