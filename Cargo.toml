@@ -7,12 +7,12 @@ version = "0.1.0"
 
 [dependencies]
 bme280 = { git = "https://github.com/VersBinarii/bme280-rs.git" }
-defmt = "0.3"
-defmt-rtt = "0.3"
+defmt = "0.3.0"
+defmt-rtt = "0.3.1"
 cortex-m = "0.7"
 cortex-m-rt = "0.7"
 #embedded-hal = { version = "0.2", features=["unproven"] }
-embedded-hal = "^1.0.0-alpha.7"
+embedded-hal = "^1.0.0-alpha.8"
 esp32-wroom-rp = { git = "https://github.com/Jim-Hodapp-Coaching/esp32-wroom-rp.git" }
 panic-probe = { version = "0.3.0", features = ["print-rtt"] }
 
