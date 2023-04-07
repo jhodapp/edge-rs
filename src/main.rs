@@ -3,7 +3,7 @@
 //! This application implements a Rust-based implementation of Edge-rs for the
 //! Raspberry Pi Pico.
 //!
-//! See the `Cargo.toml` file for Copyright and licence details.
+//! See the `Cargo.toml` file for Copyright and license details.
 
 #![no_std]
 #![no_main]
@@ -40,13 +40,6 @@ pub static BOOT2: [u8; 256] = rp2040_boot2::BOOT_LOADER_W25Q080;
 /// if your board has a different frequency
 const XTAL_FREQ_HZ: u32 = 12_000_000u32;
 
-/// Entry point to our bare-metal application.
-///
-/// The `#[entry]` macro ensures the Cortex-M start-up code calls this function
-/// as soon as all global variables are initialised.
-///
-/// The function configures the RP2040 peripherals, then performs a single I²C
-/// write to a fixed address.
 #[entry]
 fn main() -> ! {
     let mut pac = pac::Peripherals::take().unwrap();

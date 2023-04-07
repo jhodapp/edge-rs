@@ -1,26 +1,24 @@
 [package]
 authors = ["Jim Hodapp"]
-edition = "2018"
+edition = "2021"
 readme = "README.md"
 name = "edge-rs"
 version = "0.1.0"
-resolver = "2"
 
 [dependencies]
-cortex-m = "0.7.3"
-cortex-m-rt = "0.7.0"
-embedded-hal = { version = "0.2.5", features=["unproven"] }
-embedded-time = "0.12.0"
+bme280 = { git = "https://github.com/VersBinarii/bme280-rs.git" }
+defmt = "0.3"
+defmt-rtt = "0.3"
+cortex-m = "0.7"
+cortex-m-rt = "0.7"
+#embedded-hal = { version = "0.2", features=["unproven"] }
+embedded-hal = "^1.0.0-alpha.7"
+esp32-wroom-rp = { git = "https://github.com/Jim-Hodapp-Coaching/esp32-wroom-rp.git" }
+panic-probe = { version = "0.3.0", features = ["print-rtt"] }
 
-defmt = "0.2.0"
-defmt-rtt = "0.2.0"
-panic-probe = { version = "0.2.0", features = ["print-defmt"] }
-
-rp2040-hal = { git = "https://github.com/rp-rs/rp-hal", branch="main", features=["rt"] }
-rp2040-boot2 = { git = "https://github.com/rp-rs/rp2040-boot2-rs", branch="main" }
-cortex-m-semihosting = "0.3.7"
-panic-halt = "0.2.0"
-bme280 = { git = "https://github.com/David-OConnor/bme280-rs.git", branch="borrow_delay" }
+rp2040-hal = { version = "0.6", features=["rt", "eh1_0_alpha"] }
+rp2040-boot2 = { version = "0.2" }
+fugit = "0.3"
 
 [features]
 default = [
